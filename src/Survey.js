@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const SurveyContainer = styled.div`
@@ -139,14 +139,21 @@ const sections = ["IDEALISTIC", "DISILLUSIONED", "CYNICAL", "HOPEFUL"];
 const Survey = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
+  const [progressWidth, setProgressWidth] = useState(0);
 
   const handleAnswer = (answer) => {
     const newAnswers = [...answers];
     newAnswers[currentQuestion] = answer;
     setAnswers(newAnswers);
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    }
+
+    setProgressWidth(((answer + 1) / labels.length) * 100);
+
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+      }
+      setProgressWidth(0);
+    }, 500); // Adjust the timeout duration to match the transition duration
   };
 
   const prevQuestion = () => {
@@ -159,7 +166,7 @@ const Survey = () => {
     return answers.some(answer => answer !== null) && index <= currentSection;
   };
 
-  const getProgressWidth = () => {
+  const getOverallProgressWidth = () => {
     const completedQuestions = answers.filter(answer => answer !== null).length;
     const totalQuestions = questions.length;
     return (completedQuestions / totalQuestions) * 100;
@@ -181,7 +188,7 @@ const Survey = () => {
         <QuestionText>{questions[currentQuestion]}</QuestionText>
         <DotBar>
           <ProgressLine />
-          <Progress width={getProgressWidth()} />
+          <Progress width={progressWidth} />
           <DotContainer>
             {labels.map((label, index) => (
               <div key={index}>

@@ -57,7 +57,7 @@ const SegmentLabel = styled.span`
 const DotBar = styled.div`
   position: relative;
   margin: 10px 0;
-  height: 20px;
+  height: 10px;
 `;
 
 const ProgressLine = styled.div`
@@ -111,7 +111,7 @@ const Button = styled.button`
   color: black;
   font-size: 1em;
   cursor: pointer;
-  margin: 0 10px;
+  margin-top:20px;
 
   &:disabled {
     color: #ccc;
@@ -156,12 +156,13 @@ const Survey = () => {
   const getSectionProgress = (index) => {
     const questionsPerSection = Math.ceil(questions.length / sections.length);
     const currentSection = Math.floor(currentQuestion / questionsPerSection);
-    return index <= currentSection;
+    return answers.some(answer => answer !== null) && index <= currentSection;
   };
 
   const getProgressWidth = () => {
-    const currentAnswer = answers[currentQuestion];
-    return currentAnswer !== null ? ((currentAnswer + 1) / labels.length) * 100 : 0;
+    const completedQuestions = answers.filter(answer => answer !== null).length;
+    const totalQuestions = questions.length;
+    return (completedQuestions / totalQuestions) * 100;
   };
 
   return (
